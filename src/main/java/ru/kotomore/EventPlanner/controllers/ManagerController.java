@@ -1,5 +1,6 @@
 package ru.kotomore.EventPlanner.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.kotomore.EventPlanner.dto.EventRequest;
 import ru.kotomore.EventPlanner.models.Event;
 import ru.kotomore.EventPlanner.models.User;
-import ru.kotomore.EventPlanner.security.payload.response.MessageResponse;
+import ru.kotomore.EventPlanner.dto.MessageResponse;
 import ru.kotomore.EventPlanner.security.services.UserDetailsImpl;
 import ru.kotomore.EventPlanner.services.ContractService;
 import ru.kotomore.EventPlanner.services.EventService;
@@ -25,6 +26,7 @@ public class ManagerController {
     private final ContractService contractService;
 
     @PostMapping("/events")
+    @Operation(summary = "Создание мероприятия")
     public ResponseEntity<?> createEvent(@RequestBody EventRequest eventRequest,
                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -34,6 +36,7 @@ public class ManagerController {
     }
 
     @PostMapping("/contracts")
+    @Operation(summary = "Отправка заявки для заключения договора")
     public ResponseEntity<?> createContractRequest(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         contractService.createContractRequest(userDetails.user());
         return ResponseEntity.ok(new MessageResponse("Заявка успешно отправлена"));
