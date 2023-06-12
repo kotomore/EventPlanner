@@ -34,7 +34,7 @@ public class AdminController {
         List<Contract> contracts = contractService.findByStatus(contractStatus);
 
         if (contracts.isEmpty()) {
-            ResponseEntity.noContent();
+            return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.ok(contracts);
