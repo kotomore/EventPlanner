@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.kotomore.EventPlanner.dto.EventRequest;
 import ru.kotomore.EventPlanner.dto.RegistrationInfoRequest;
+import ru.kotomore.EventPlanner.exceptions.EventNotFoundException;
 import ru.kotomore.EventPlanner.models.Event;
 import ru.kotomore.EventPlanner.models.RegistrationInfo;
 import ru.kotomore.EventPlanner.models.User;
@@ -28,7 +29,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public RegistrationInfo registerUserForEvent(User user, Long eventId, RegistrationInfoRequest registrationInfoRequest) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Мероприятие не найдено"));
+                .orElseThrow(() -> new EventNotFoundException(eventId));
 
         RegistrationInfo registrationInfo = modelMapper.map(registrationInfoRequest, RegistrationInfo.class);
         registrationInfo.setUser(user);

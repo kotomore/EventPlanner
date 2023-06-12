@@ -1,4 +1,4 @@
-package ru.kotomore.EventPlanner.security.payload.response;
+package ru.kotomore.EventPlanner.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

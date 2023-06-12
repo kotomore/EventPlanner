@@ -1,4 +1,4 @@
-package ru.kotomore.EventPlanner.security.payload.request;
+package ru.kotomore.EventPlanner.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

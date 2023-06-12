@@ -7,12 +7,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.kotomore.EventPlanner.exceptions.UserAlreadyExistException;
+import ru.kotomore.EventPlanner.exceptions.UserRoleNotExistException;
 import ru.kotomore.EventPlanner.models.Role;
 import ru.kotomore.EventPlanner.models.User;
 import ru.kotomore.EventPlanner.repositories.UserRepository;
-import ru.kotomore.EventPlanner.security.payload.request.LoginRequest;
-import ru.kotomore.EventPlanner.security.payload.request.RegistrationRequest;
-import ru.kotomore.EventPlanner.security.payload.response.UserInfoResponse;
+import ru.kotomore.EventPlanner.dto.LoginRequest;
+import ru.kotomore.EventPlanner.dto.RegistrationUserRequest;
+import ru.kotomore.EventPlanner.dto.UserInfoResponse;
 import ru.kotomore.EventPlanner.security.services.UserDetailsImpl;
 
 @Service
@@ -35,18 +37,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void registration(RegistrationRequest registrationRequest) {
-        if (userRepository.existsByUsername(registrationRequest.getUsername())) {
-            throw new RuntimeException("Error: Имя пользователя уже существует");
+    public void registration(RegistrationUserRequest registrationUserRequest) {
+        if (userRepository.existsByUsername(registrationUserRequest.getUsername())) {
+            throw new UserAlreadyExistException(registrationUserRequest.getUsername());
         }
 
-        User user = new User(registrationRequest.getUsername(),
-                encoder.encode(registrationRequest.getPassword()));
+        User user = new User(registrationUserRequest.getUsername(),
+                encoder.encode(registrationUserRequest.getPassword()));
 
-        switch (registrationRequest.getRole().toLowerCase()) {
+        switch (registrationUserRequest.getRole().toLowerCase()) {
             case "user" -> user.setRole(Role.ROLE_USER);
             case "manager" -> user.setRole(Role.ROLE_MANAGER);
-            default -> throw new RuntimeException("Error: Тип пользователя не существует");
+            default -> throw new UserRoleNotExistException(registrationUserRequest.getRole());
         }
 
         userRepository.save(user);

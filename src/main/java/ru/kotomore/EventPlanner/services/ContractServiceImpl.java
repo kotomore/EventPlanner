@@ -2,6 +2,8 @@ package ru.kotomore.EventPlanner.services;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.kotomore.EventPlanner.exceptions.ContractNotFoundException;
+import ru.kotomore.EventPlanner.exceptions.ContractRequestAlreadySentException;
 import ru.kotomore.EventPlanner.models.Contract;
 import ru.kotomore.EventPlanner.models.ContractStatus;
 import ru.kotomore.EventPlanner.models.User;
@@ -17,7 +19,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public void createContractRequest(User user) {
         if (contractRepository.existsByUser(user)) {
-            throw new RuntimeException("Заявка на заключение договора уже отправлена");
+            throw new ContractRequestAlreadySentException();
         }
 
         Contract contract = new Contract();
@@ -28,16 +30,12 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public List<Contract> findByStatus(ContractStatus contractStatus) {
-        List<Contract> contracts = contractRepository.findByContractStatus(contractStatus);
-        if (contracts.isEmpty()) {
-            throw new RuntimeException("Договоров не найдено");
-        }
-        return contracts;
+        return contractRepository.findByContractStatus(contractStatus);
     }
 
     public Contract changeStatus(Long contractId, ContractStatus contractStatus) {
         Contract editedContract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new RuntimeException("Договор не найден"));
+                .orElseThrow(() -> new ContractNotFoundException(contractId));
         editedContract.setContractStatus(contractStatus);
         return contractRepository.save(editedContract);
     }
