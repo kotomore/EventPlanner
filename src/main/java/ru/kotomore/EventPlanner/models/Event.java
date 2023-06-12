@@ -25,7 +25,7 @@ public class Event {
 
     private Date date;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "user_id")
     private User user;
 }

@@ -16,9 +16,11 @@ public class Contract {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "user_id")
     private User user;
+
     @Enumerated(EnumType.STRING)
     private ContractStatus contractStatus;
 }
