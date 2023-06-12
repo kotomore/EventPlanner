@@ -5,10 +5,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.kotomore.EventPlanner.dto.EventRequest;
 import ru.kotomore.EventPlanner.dto.RegistrationInfoRequest;
+import ru.kotomore.EventPlanner.exceptions.ContractNotAcceptedException;
+import ru.kotomore.EventPlanner.exceptions.ContractNotFoundException;
 import ru.kotomore.EventPlanner.exceptions.EventNotFoundException;
-import ru.kotomore.EventPlanner.models.Event;
-import ru.kotomore.EventPlanner.models.RegistrationInfo;
-import ru.kotomore.EventPlanner.models.User;
+import ru.kotomore.EventPlanner.models.*;
+import ru.kotomore.EventPlanner.repositories.ContractRepository;
 import ru.kotomore.EventPlanner.repositories.EventRepository;
 import ru.kotomore.EventPlanner.repositories.RegistrationInfoRepository;
 
@@ -16,11 +17,18 @@ import ru.kotomore.EventPlanner.repositories.RegistrationInfoRepository;
 @AllArgsConstructor
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
+    private final ContractRepository contractRepository;
     private final RegistrationInfoRepository registrationInfoRepository;
     private final ModelMapper modelMapper;
 
     @Override
     public Event createEvent(User user, EventRequest eventRequest) {
+
+        Contract contract = contractRepository.findByUser(user).orElseThrow(ContractNotFoundException::new);
+        if (contract.getContractStatus() != ContractStatus.ACCEPTED) {
+            throw new ContractNotAcceptedException();
+        }
+
         Event savedEvent = modelMapper.map(eventRequest, Event.class);
         savedEvent.setUser(user);
         return eventRepository.save(savedEvent);

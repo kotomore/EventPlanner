@@ -4,4 +4,8 @@ public class ContractNotFoundException extends RuntimeException {
     public ContractNotFoundException(Long id) {
         super(String.format("Договор с ID - %d не найден", id));
     }
+
+    public ContractNotFoundException() {
+        super("Договор не найден");
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.kotomore.EventPlanner.dto.MessageResponse;
+import ru.kotomore.EventPlanner.exceptions.ContractNotAcceptedException;
 import ru.kotomore.EventPlanner.exceptions.ContractNotFoundException;
 import ru.kotomore.EventPlanner.exceptions.ContractRequestAlreadySentException;
 import ru.kotomore.EventPlanner.exceptions.EventNotFoundException;
@@ -39,6 +40,13 @@ public class UserExceptionAdvice {
     @ExceptionHandler(ContractRequestAlreadySentException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<Object> contractRequestAlreadySentException(ContractRequestAlreadySentException ex) {
+        return new ResponseEntity<>(new MessageResponse(ex.getMessage()), new HttpHeaders(), HttpStatus.CONFLICT);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ContractNotAcceptedException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Object> contractNotAcceptedException(ContractNotAcceptedException ex) {
         return new ResponseEntity<>(new MessageResponse(ex.getMessage()), new HttpHeaders(), HttpStatus.CONFLICT);
     }
 }
